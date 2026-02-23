@@ -1,6 +1,16 @@
 use std::io;
 
-#[derive(Debug, Default)]
+/// Reads a line from stdin and returns it trimmed.
+/// Avoids repeating String::new() + read_line() + trim() everywhere.
+fn read_input() -> String {
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read input");
+    input.trim().to_string()
+}
+
+#[derive(Debug)]
 struct User {
     name: String,
     password: String,
@@ -45,7 +55,7 @@ impl ATM {
         if self
             .users
             .iter()
-            .all(|x| x.name == name && x.password == password)
+            .any(|x| x.name == name && x.password == password)
         {
             println!("Welcome");
             true
@@ -55,10 +65,70 @@ impl ATM {
         }
     }
 
-    fn check_balance(&self, user: &User){
-        println!("Balance: {}\nDebt: {}", user.balance, user.debt);
-        println!("Press d to deposit, w to withdraw, q to quit");
+    fn deposit(&mut self, name: &str, amount: f64) {
+        // iter_mut() gives us mutable references so we can modify the user's balance
+        if let Some(user) = self.users.iter_mut().find(|x| x.name == name) {
+            user.balance += amount;
+            println!("Deposited {:.2}. New balance: {:.2}", amount, user.balance);
+        } else {
+            println!("User not found");
+        }
+    }
 
+    fn withdraw(&mut self, name: &str, amount: f64) {
+        if let Some(user) = self.users.iter_mut().find(|x| x.name == name) {
+            // check if the user has enough balance before withdrawing
+            if amount > user.balance {
+                println!("Insufficient funds. Your balance is {:.2}", user.balance);
+            } else {
+                user.balance -= amount;
+                println!("Withdrew {:.2}. New balance: {:.2}", amount, user.balance);
+            }
+        } else {
+            println!("User not found");
+        }
+    }
+
+    fn pay_debts(&mut self, name: &str) {
+        if let Some(user) = self.users.iter_mut().find(|x| x.name == name) {
+            if user.debt <= 0.0 {
+                println!("You have no debts!");
+                return;
+            }
+
+            println!("How much of the debt do you want to pay? A for all, v for a specific value");
+            let input = read_input().to_lowercase();
+            match input.as_str() {
+                "a" => {
+                    if user.balance < user.debt {
+                        println!("Not enough funds to cover all the debts");
+                    } else {
+                        user.balance -= user.debt;
+                        user.debt = 0.0;
+                        println!("Debt all paid, funds remaining: {:.2}", user.balance);
+                    }
+                }
+                "v" => {
+                    println!(
+                        "Balance: {:.2}\nDebt: {:.2}\nInput the amount to be paid:",
+                        user.balance, user.debt
+                    );
+                    let amount: f64 = read_input().parse().expect("Please type a number");
+                    if amount > user.balance {
+                        println!("Not enough funds in the account");
+                    } else if amount > user.debt {
+                        println!("Amount surpasses the total debt, please try again");
+                    } else {
+                        user.balance -= amount;
+                        user.debt -= amount;
+                        println!("Debt paid successfully. Balance: {:.2}", user.balance);
+                    }
+                }
+                _ => {
+                    println!("Invalid option, please try again");
+                }
+            }
+        }
     }
 }
 
@@ -67,84 +137,95 @@ fn main() {
     let mut atm = ATM::new(("Tigrinho").to_string());
 
     println!("Criar usuarios? Y or N");
+    println!();
 
     //verifica se usuario quer criar novo user
-    let mut choice = String::new();
-    io::stdin()
-        .read_line(&mut choice)
-        .expect("Failed to read choice");
-    if choice.trim().to_lowercase() == "y" {
+    if read_input().to_lowercase() == "y" {
         //cria loop chamado create
         'create: loop {
-            let mut name = String::new();
-            let mut password = String::new();
-            let mut balance = String::new();
-            let mut debt = String::new();
-
             println!("Name: ");
-            io::stdin()
-                .read_line(&mut name)
-                .expect("Failed to read name");
+            let name = read_input();
 
             println!("Password: ");
-            io::stdin()
-                .read_line(&mut password)
-                .expect("Failed to read password");
+            let password = read_input();
 
-            println!("balance: ");
+            println!("Balance: ");
+            let balance: f64 = read_input().parse().expect("Please type a number");
 
-            io::stdin()
-                .read_line(&mut balance)
-                .expect("Failed to read balance");
+            println!("Debt: ");
+            let debt: f64 = read_input().parse().expect("Please type a number");
 
-            println!("debt");
-            io::stdin()
-                .read_line(&mut debt)
-                .expect("Failed to read debt");
-            //trata as variaveis
-            let name = name.trim().to_string();
-            let password = password.trim().to_string();
-            let balance: f64 = balance.trim().parse().unwrap();
-            let debt: f64 = debt.trim().parse().unwrap();
-            
             //passa o usuario para o vetor da atm
             let user = User::new(name, password, balance, debt);
             atm.add_user(user);
 
             println!("Continue? Y or N");
 
-            let mut choice1 = String::new();
-
-            io::stdin().read_line(&mut choice1).expect("Failed to read");
-
-            if choice1.trim().to_lowercase() == "n" {
+            if read_input().to_lowercase() == "n" {
                 break 'create;
             }
         }
-
     }
-    
+    println!();
     atm.return_users();
-    
-    let mut name = String::new();
-    let mut password = String::new();
-    
+    println!();
+
     println!("Logging: ");
-    
-    println!("name: ");
-    io::stdin().read_line(&mut name).expect("Failed to read name");
-    
+
+    println!("Name: ");
+    let name = read_input();
+
     println!("Password: ");
-    io::stdin().read_line(&mut password).expect("Failed to read password");
-    
-    let name = name.trim().to_string();
-    let password = password.trim().to_string();
-    
+    let password = read_input();
+
     //login
-    if atm.login(&name, &password){
-        if let Some(user_name) = atm.users.iter().find(|x| x.name == name.to_string()){
-            atm.check_balance(user_name);
-            
-        };
+    if atm.login(&name, &password) {
+        // after successful login, enter the operations loop
+        loop {
+            // print balance without holding a mutable borrow
+            if let Some(user) = atm.users.iter().find(|x| x.name == name) {
+                println!("Balance: {:.2}\nDebt: {:.2}", user.balance, user.debt);
+            }
+            println!("Press d to deposit, w to withdraw, p to pay debts, q to quit");
+
+            let action = read_input().to_lowercase();
+
+            match action.as_str() {
+                "d" => {
+                    println!("Amount to deposit: ");
+                    let amount: f64 = match read_input().parse() {
+                        Ok(v) => v,
+                        Err(_) => {
+                            println!("Invalid amount");
+                            continue;
+                        }
+                    };
+                    atm.deposit(&name, amount);
+                }
+                "w" => {
+                    println!("Amount to withdraw: ");
+                    let amount: f64 = match read_input().parse() {
+                        Ok(v) => v,
+                        Err(_) => {
+                            println!("Invalid amount");
+                            continue;
+                        }
+                    };
+                    atm.withdraw(&name, amount);
+                }
+                "q" => {
+                    println!("Goodbye!");
+                    break;
+                }
+                "p" => {
+                    atm.pay_debts(&name);
+                }
+                _ => {
+                    println!("Invalid option. Use d, w, or q.");
+                }
+            }
+        }
+    } else {
+        println!("Login failed.");
     }
 }
