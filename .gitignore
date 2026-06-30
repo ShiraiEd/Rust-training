@@ -1,1 +1,8 @@
-/target
+# Cargo build artifacts (em qualquer subprojeto)
+target/
+
+# Backup files
+**/*.rs.bk
+
+# MSVC
+*.pdb
