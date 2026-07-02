@@ -16,14 +16,14 @@ fn main() {
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(config.file_path)?;
 
-    let results = if config.ignore_case {
-        search_case_insensitive(&config.query, &content)
+    if config.ignore_case {
+        for line in search_case_insensitive(&config.query, &content) {
+            println!("{line}");
+        }
     } else {
-        search(&config.query, &content)
-    };
-
-    for line in results {
-        println!("{line}");
+        for line in search(&config.query, &content) {
+            println!("{line}");
+        }
     }
     Ok(())
 }
@@ -57,3 +57,5 @@ impl Config {
         })
     }
 }
+
+
