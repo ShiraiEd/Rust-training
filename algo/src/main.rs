@@ -4,10 +4,10 @@ fn main() {
     println!("primeira busca l: {}", linear_search(&arr, 6));
     println!("segunda busca l: {}", linear_search(&arr, 8));
     println!("terceira busca l: {}", linear_search(&arr, 11));
-    // println!("busca binaria: {}", binary_search(&arr, 1));
-    // println!("segunda busca b: {}", binary_search(&arr, 2));
-    // println!("terceira busca b: {}", binary_search(&arr, 3));
-    // println!("quarta busca b: {}", binary_search(&arr, 6));
+    println!("busca binaria: {}", binary_search(&arr, 4));
+    println!("segunda busca b: {}", binary_search(&arr, 2));
+    println!("terceira busca b: {}", binary_search(&arr, 3));
+    println!("quarta busca b: {}", binary_search(&arr, 6));
 }
 
 fn linear_search(arr: &[i32], item: i32) -> isize {
@@ -19,16 +19,27 @@ fn linear_search(arr: &[i32], item: i32) -> isize {
     -1
 }
 
-// fn binary_search(arr: &[i32], item: i32) -> i32 {
-//     let mut metade = (arr.len() as f64 / 2_f64).round() as usize;
-//     while arr[metade] != item {
-//         println!("index: {metade}");
-//         println!("valor: {}", arr[metade]);
-//         if arr[metade] > item {
-//             metade = (metade as f64 - (metade as f64 / 2_f64).round()).round() as usize;
-//         } else {
-//             metade = (((arr.len() as f64) - metade as f64) / 2_f64).ceil() as usize + metade;
-//         }
-//     }
-//     metade as i32
-// }
+fn binary_search(arr: &[i32], item: i32) -> i32 {
+    let metade = ((arr.len() as f64 / 2_f64).ceil() - 1_f64) as usize;
+    if arr[metade] == item {
+        return metade as i32;
+    }
+    if arr[metade] < item {
+        let slice = &arr[metade + 1..];
+        binary_search(slice, item) + metade as i32 + 1_i32
+    } else {
+        let slice = &arr[..metade];
+        binary_search(slice, item)
+    }
+    //     let mut metade = (arr.len() as f64 / 2_f64).round() as usize;
+    //     while arr[metade] != item {
+    //         println!("index: {metade}");
+    //         println!("valor: {}", arr[metade]);
+    //         if arr[metade] > item {
+    //             metade = (metade as f64 - (metade as f64 / 2_f64).round()).round() as usize;
+    //         } else {
+    //             metade = (((arr.len() as f64) - metade as f64) / 2_f64).ceil() as usize + metade;
+    //         }
+    //     }
+    //     metade as i32
+}
