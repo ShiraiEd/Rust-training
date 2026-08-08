@@ -1,5 +1,5 @@
-/// Receber array e retornar o segundo maior numero da lista
-fn segundo(arr: &[i32]) -> Option<i32> {
+/// Receber array e retornar o segundo maior item da lista
+fn segundo<T: Ord + Copy>(arr: &[T]) -> Option<T> {
     /*[1,0,-3,7]
      * maior atual esta no 1 e o segundo maior nao tem
      * maior atual ainda 1 e o segundo maior 0
@@ -39,33 +39,23 @@ mod tests {
 
     #[test]
     fn funcao_segundo_retorna_maior_numero_da_array() {
-        let array = [1, 2, 3, 4, 5];
-        let result = segundo(&array);
-        assert_eq!(result, Some(4));
+        assert_eq!(segundo(&[1, 2, 3, 4, 5]), Some(4));
     }
     #[test]
     fn funcao_segundo_retorna_maior_numero_negativo_da_array() {
-        let array = [-2, -4, -5];
-        let result = segundo(&array);
-        assert_eq!(result, Some(-4));
+        assert_eq!(segundo(&[-2, -4, -5]), Some(-4));
     }
     #[test]
     fn funcao_segundo_array_vazia() {
-        let array = [];
-        let result = segundo(&array);
-        assert_eq!(result, None);
+        assert_eq!(segundo::<i32>(&[]), None);
     }
     #[test]
     fn funcao_segundo_retorna_none_para_lista_identica() {
-        let array = [7, 7, 7, 7];
-        let result = segundo(&array);
-        assert_eq!(result, None);
+        assert_eq!(segundo(&[7, 7, 7, 7]), None);
     }
     #[test]
     fn funcao_segundo_retorna_none_para_um_unico_item_na_lista() {
-        let array = [7];
-        let result = segundo(&array);
-        assert_eq!(result, None);
+        assert_eq!(segundo(&[7]), None);
     }
     #[test]
     fn funcao_segundo_lista_decrescente() {
@@ -75,14 +65,19 @@ mod tests {
     }
     #[test]
     fn funcao_segundo_apenas_dois_elementos() {
-        let array = [2, 1];
-        let result = segundo(&array);
-        assert_eq!(result, Some(1));
+        assert_eq!(segundo(&[2, 1]), Some(1));
     }
     #[test]
     fn funcao_segundo_random() {
-        let array = [2, 1, 0, -3, -5, 0];
-        let result = segundo(&array);
-        assert_eq!(result, Some(1));
+        assert_eq!(segundo(&[2, 1, 0, -3, -5, 0]), Some(1));
+    }
+    #[test]
+    fn segundo_funciona_com_chars() {
+        assert_eq!(segundo(&['a', 'b', 'c']), Some('b'));
+    }
+
+    #[test]
+    fn segundo_funciona_com_bool() {
+        assert_eq!(segundo(&[true, false]), Some(false));
     }
 }
