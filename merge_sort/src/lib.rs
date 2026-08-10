@@ -1,15 +1,13 @@
 /// Implementacao do algoritimo de merge sort
-fn merge_sort(arr: Vec<i32>) -> Vec<i32> {
+fn merge_sort<T: Copy + Ord>(arr: Vec<T>) -> Vec<T> {
     /* primeiramente deve se dividir a array pela metade consecutivamente ate chegar a unidades
      * singulares len = 1 e.g [3,1,7,5] -> [3] [1] [7] [5]
      * depois deve se comparar os items da duas arrays, juntar em uma array ordenada e.g [3] [1] ->
      * [1, 3] e [7] [5] -> [5, 7], ate todas se juntarem [1,3] [5, 7] -> [1,3,5,7,]
      */
-
     // top-down recursivo
     //base case
     //
-
     if arr.len() <= 1 {
         return arr;
     }
@@ -18,7 +16,6 @@ fn merge_sort(arr: Vec<i32>) -> Vec<i32> {
     let metade_esquerda = arr[0..metade].to_vec();
     let metade_direita = arr[metade..].to_vec();
     // metade_esquerda [1,2] metade_direita[3,4]
-
     //vai dividir ate sobrar apenas uma lista de 1 em para esquerda e direita
     //a.[2,1,4,3,] -> metade_esquerda = [2,1] metade_direita = [4,3]
     //a.esquerda = merge_sort([2,1])
@@ -32,15 +29,12 @@ fn merge_sort(arr: Vec<i32>) -> Vec<i32> {
     //retorna a lista ordenada
     let esquerda = merge_sort(metade_esquerda);
     let direita = merge_sort(metade_direita);
-
     //checa primeiro item da esquerda com o primeiro da direita
     //caso maior adiciona a lista e aumenta o indice da esquerda em um
     //repete
     //caso o maior for o da direita, adiciona na lista e aumenta o indice da direita em um
     //faca isso ate sobra um so em ma lista e adicionar ele por ultimo
-    //
-    //
-    let mut result = Vec::<i32>::new();
+    let mut result = Vec::<T>::new();
     let mut esquerda_idx = 0;
     let mut direita_idx = 0;
 
@@ -69,7 +63,7 @@ mod tests {
 
     #[test]
     fn retorna_lista_vazia_quando_recebe_lista_vazia() {
-        assert_eq!(merge_sort(Vec::new()), vec![]);
+        assert_eq!(merge_sort(Vec::<i32>::new()), vec![]);
     }
 
     #[test]
