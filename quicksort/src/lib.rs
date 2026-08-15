@@ -70,24 +70,20 @@
 //faz recursivamente dos dois lados, excluindo i
 //ate a array retornar apenas 1 numero(base case)
 pub fn quicksort<T: Ord>(arr: &mut [T]) {
-    if arr.is_empty() {
-        return;
-    }
     if arr.len() <= 1 {
         return;
     }
     let last = arr.len() - 1;
-    let mut meio = 0;
+    let mut referencia = 0;
 
     for n in 0..last {
-        if arr[n] >= arr[last] {
-        } else if arr[n] < arr[last] {
-            arr.swap(meio, n);
-            meio += 1;
+        if arr[n] < arr[last] {
+            arr.swap(referencia, n);
+            referencia += 1;
         }
     }
-    arr.swap(meio, last);
-    let (esquerda, direita) = arr.split_at_mut(meio);
+    arr.swap(referencia, last);
+    let (esquerda, direita) = arr.split_at_mut(referencia);
     let direita = &mut direita[1..];
     quicksort(esquerda);
     quicksort(direita);
