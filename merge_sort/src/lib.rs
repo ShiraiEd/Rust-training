@@ -1,5 +1,5 @@
 /// Implementacao do algoritimo de merge sort
-fn merge_sort<T: Copy + Ord>(arr: Vec<T>) -> Vec<T> {
+fn merge_sort<T: Copy + Ord>(arr: &[T]) -> Vec<T> {
     /* primeiramente deve se dividir a array pela metade consecutivamente ate chegar a unidades
      * singulares len = 1 e.g [3,1,7,5] -> [3] [1] [7] [5]
      * depois deve se comparar os items da duas arrays, juntar em uma array ordenada e.g [3] [1] ->
@@ -9,12 +9,12 @@ fn merge_sort<T: Copy + Ord>(arr: Vec<T>) -> Vec<T> {
     //base case
     //
     if arr.len() <= 1 {
-        return arr;
+        return arr.to_vec();
     }
     // [1,2,3,4]
     let metade = arr.len() / 2;
-    let metade_esquerda = arr[0..metade].to_vec();
-    let metade_direita = arr[metade..].to_vec();
+    let metade_esquerda = &arr[0..metade];
+    let metade_direita = &arr[metade..];
     // metade_esquerda [1,2] metade_direita[3,4]
     //vai dividir ate sobrar apenas uma lista de 1 em para esquerda e direita
     //a.[2,1,4,3,] -> metade_esquerda = [2,1] metade_direita = [4,3]
@@ -58,34 +58,40 @@ mod tests {
 
     #[test]
     fn ordena_corretamente_lista_positiva() {
-        assert_eq!(merge_sort(vec![8, 7, 3, 5]), vec![3, 5, 7, 8]);
+        assert_eq!(merge_sort(&[8, 7, 3, 5]), vec![3, 5, 7, 8]);
     }
 
     #[test]
     fn retorna_lista_vazia_quando_recebe_lista_vazia() {
-        assert_eq!(merge_sort(Vec::<i32>::new()), vec![]);
+        assert_eq!(merge_sort::<i32>(&[]), vec![]);
     }
 
     #[test]
     fn ordena_lista_negativa() {
-        assert_eq!(merge_sort([-5, -2, -10].to_vec()), [-10, -5, -2].to_vec());
+        assert_eq!(merge_sort(&[-5, -2, -10]), [-10, -5, -2].to_vec());
     }
 
     #[test]
     fn ordena_numeros_mistos() {
         assert_eq!(
-            merge_sort([-100, 0, 4, 7, -2, 10].to_vec()),
+            merge_sort(&[-100, 0, 4, 7, -2, 10]),
             [-100, -2, 0, 4, 7, 10].to_vec()
         );
     }
 
     #[test]
     fn lista_com_numeros_iguais() {
-        assert_eq!(merge_sort([5, 5, 5].to_vec()), [5, 5, 5].to_vec());
+        assert_eq!(merge_sort(&[5, 5, 5]), [5, 5, 5].to_vec());
     }
 
     #[test]
     fn lista_com_unico_numero() {
-        assert_eq!(merge_sort([10].to_vec()), [10].to_vec());
+        assert_eq!(merge_sort(&[10]), [10].to_vec());
+    }
+
+    #[test]
+    fn aceita_vec_por_deref() {
+        let v = vec![4, 1, 3];
+        assert_eq!(merge_sort(&v), vec![1, 3, 4]);
     }
 }
