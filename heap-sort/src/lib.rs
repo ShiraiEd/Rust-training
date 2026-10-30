@@ -1,36 +1,18 @@
 //Heap sort implementation
 //
-
 // well this one actually sorts, but it doesnt heapfy correctyly
 //
+//
 fn heapsort(arr: &mut [i32]) {
-    if arr.len() <= 1 {
-        return;
-    }
-    let mut last = arr.len() - 1;
-    while last > 0 {
-        heapfymax(arr, last);
-        arr.swap(0, last);
-        last -= 1;
-    }
-}
-fn heapfymax(arr: &mut [i32], last: usize) {
-    let mut last = last;
-    if last % 2 == 0 {
-        if arr[last - 1] >= arr[last] && arr[last - 1] > arr[(last - 1) / 2] {
-            arr.swap(last - 1, (last - 1) / 2);
-        } else if arr[last] > arr[(last - 1) / 2] {
-            arr.swap(last, (last - 1) / 2);
-        }
-        last -= 2;
-    } else {
-        if arr[last] > arr[last / 2] {
-            arr.swap(last, last / 2);
-        }
-        last -= 1;
-    }
-    if last > 0 {
-        heapfymax(arr, last);
+    let len = arr.len();
+    const BASE: f64 = 2.0;
+    let len = len as f64;
+    let levels = len.log(BASE);
+    let rep = len.log(BASE);
+    let mut idxf = 0.0;
+    for n in 0..(levels as i32 - 1) {
+        let n = n as f64;
+        idxf += n.log(BASE);
     }
 }
 #[cfg(test)]
